@@ -1,0 +1,31 @@
+{
+  "name": "@state-sync/redux-path-reducer",
+  "version": "0.0.1",
+  "description": "state-sync client only json path reducer",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "repository": "https://github.com/state-sync/redux-path-reducer.git",
+  "author": "Fedor Ilinykh <ify@kibibox.com>",
+  "keywords": [
+    "statesync",
+    "state-sync",
+    "redux",
+    "react"
+  ],
+  "license": "Apache-2.0",
+  "private": false,
+  "devDependencies": {
+    "typedoc": "^0.8.0",
+    "typescript": "^2.5.3"
+  },
+  "scripts": {
+    "prepublish": "yarn run build",
+    "publish": "yarn run build",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tsdoc": "node ./node_modules/typedoc/bin/typedoc --out tsdoc"
+  },
+  "dependencies": {
+    "redux": "^2.0.0 || ^3.0.0 || ^4.0.0-0"
+  }
+}
