@@ -1,7 +1,6 @@
 import { Store } from "redux";
 
 import { OpSelect } from './Patch';
-import find from './utils/find';
 
 export class PatchArea<S> {
     private store: Store<S>;
@@ -16,7 +15,7 @@ export class PatchArea<S> {
         return new OpSelect({op: 'select', path: this.path(path)}).apply(this.store.getState());
     }
 
-    public actionReplace(path: string, value: any) {
+    public replace(path: string, value: any) {
         if (!this.store) throw 'PatchArea is not initialized';
         this.store.dispatch({
             type: '@STATE_SYNC/PATCH_REDUCE', payload: [{
@@ -25,7 +24,7 @@ export class PatchArea<S> {
         });
     }
 
-    public actionRemove(path: string): void {
+    public remove(path: string): void {
         if (!this.store) throw 'PatchArea is not initialized';
         try {
             this.store.dispatch({
@@ -36,6 +35,10 @@ export class PatchArea<S> {
         } catch (e) {
             console.error(e);
         }
+    }
+
+    public child(path: string): PatchArea<S> {
+        return new PatchArea<S>(this.rootPath + '/' + path, this.store);
     }
 
     private path(path: string) {
