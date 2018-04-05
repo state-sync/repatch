@@ -1,6 +1,6 @@
 {
   "name": "@state-sync/repatch",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "state-sync client only json path reducer",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -21,7 +21,6 @@
   },
   "scripts": {
     "prepublish": "yarn run build",
-    "publish": "npm publish --access=public",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsdoc": "node ./node_modules/typedoc/bin/typedoc --out tsdoc"

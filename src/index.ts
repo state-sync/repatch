@@ -1,2 +1,2 @@
-export { PatchArea } from 'PatchArea';
+export { PatchArea } from './PatchArea';
 export { PatchReducer } from './PatchReducer';
