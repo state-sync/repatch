@@ -43,6 +43,6 @@ export class PatchArea<S> {
 
     private path(path: string) {
         if (path.startsWith('/')) path = path.substring(1);
-        return this.rootPath + path;
+        return this.rootPath + '/'+ path;
     }
 }
