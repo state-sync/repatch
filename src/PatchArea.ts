@@ -19,7 +19,7 @@ export class PatchArea<S> {
         if (!this.store) throw 'PatchArea is not initialized';
         this.store.dispatch({
             type: '@STATE_SYNC/PATCH_REDUCE', payload: [{
-                op: 'replace', path: path, value: value
+                op: 'replace', path: this.path(path), value: value
             }]
         });
     }
@@ -38,7 +38,7 @@ export class PatchArea<S> {
     }
 
     public child(path: string): PatchArea<S> {
-        return new PatchArea<S>(this.rootPath + '/' + path, this.store);
+        return new PatchArea<S>(this.path(path), this.store);
     }
 
     private path(path: string) {
