@@ -1,6 +1,6 @@
 {
   "name": "@state-sync/repatch",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "description": "state-sync client only json path reducer",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -16,13 +16,18 @@
   "license": "Apache-2.0",
   "private": false,
   "devDependencies": {
+    "@types/chai": "^4.1.2",
+    "@types/mocha": "^5.0.0",
+    "chai": "^4.1.2",
+    "mocha": "^5.1.0",
+    "ts-node": "^5.0.1",
     "typedoc": "^0.8.0",
     "typescript": "^2.5.3"
   },
   "scripts": {
     "prepublish": "yarn run build",
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha -r ts-node/register test/**/*.spec.ts",
     "tsdoc": "node ./node_modules/typedoc/bin/typedoc --out tsdoc"
   },
   "dependencies": {

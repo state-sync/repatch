@@ -11,10 +11,33 @@ export class PatchArea<S> {
         this.store = store;
     }
 
+    /**
+     * Selects and return value by path
+     * @param {string} path - JSON path
+     * @returns {any} value
+     */
     public select(path: string) {
         return new OpSelect({op: 'select', path: this.path(path)}).apply(this.store.getState());
     }
 
+    /**
+     * Replace value by path, missed elements built by path part. If path part is number, missed array constructed,
+     * otherwise object is created.
+     * Example 1
+     * <pre>
+     *     source: {}
+     *     replace('/todo/1/label', 'test')
+     *     result: {
+     *      todo: [
+     *          {
+     *              label: 'test'
+     *          }
+     *      ]
+     *     }
+     * </pre>
+     * @param {string} path
+     * @param value
+     */
     public replace(path: string, value: any) {
         if (!this.store) throw 'PatchArea is not initialized';
         this.store.dispatch({
@@ -23,7 +46,36 @@ export class PatchArea<S> {
             }]
         });
     }
+    /**
+     * Merge value by path, missed elements built by path part. If path part is number, missed array constructed,
+     * otherwise object is created.
+     * Example 1
+     * <pre>
+     *     source: { obj: {id: '1', name: ''}
+     *     merge('/obj', {name: 'test'})
+     *     result: {
+     *       obj: {
+     *         id: '1',
+     *         name: 'test'
+     *       }
+     *     }
+     * </pre>
+     * @param {string} path
+     * @param value
+     */
+    public merge(path: string, value: any) {
+        if (!this.store) throw 'PatchArea is not initialized';
+        this.store.dispatch({
+            type: '@STATE_SYNC/PATCH_REDUCE', payload: [{
+                op: 'merge', path: this.path(path), value: value
+            }]
+        });
+    }
 
+    /**
+     * Removes element by path
+     * @param {string} path - JSON path
+     */
     public remove(path: string): void {
         if (!this.store) throw 'PatchArea is not initialized';
         try {
@@ -37,8 +89,25 @@ export class PatchArea<S> {
         }
     }
 
+    /**
+     * Return area for child element
+     * @param {string} path - path to child element
+     * @returns {PatchArea<S>}
+     */
     public child(path: string): PatchArea<S> {
         return new PatchArea<S>(this.path(path), this.store);
+    }
+
+    public accept(path: string): (a: any) => void {
+        return (e: any) => this.replace(path, e.target.value);
+    }
+
+    public acceptFloat(path: string): (a: any) => void {
+        return (e: any) => this.replace(path, e.target.value ? Number.parseFloat(e.target.value) : null);
+    }
+
+    public acceptInt(path: string): (a: any) => void {
+        return (e: any) => this.replace(path, e.target.value ? Number.parseInt(e.target.value) : null);
     }
 
     private path(path: string) {

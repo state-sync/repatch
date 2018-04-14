@@ -1,7 +1,7 @@
 export interface PatchOperation {
     op: string;
     path: string;
-    value?: string;
+    value?: any;
     from?: string;
 }
 
@@ -37,6 +37,34 @@ class OpReplace extends Op {
             clone[this.path[index]] = this.value;
         }
         return clone;
+    }
+}
+
+class OpMerge extends Op {
+    private value?: any;
+    private root: boolean;
+
+    public constructor(src: PatchOperation) {
+        super(src);
+        this.root = src.path === '' || src.path === '/';
+        this.value = src.value;
+    }
+
+    public apply(json: any): any {
+        return this.root ? this.merge(json, this.value) : this.applySegment(json, 0);
+    }
+
+    private applySegment(json: any, index: number): any {
+        let clone = json instanceof Array ? [...json] : {...json};
+        if (index + 1 < this.path.length) {
+            clone[this.path[index]] = this.applySegment(clone[this.path[index]] || {}, index + 1);
+        } else {
+            clone[this.path[index]] = this.merge(clone[this.path[index]], this.value);
+        }
+        return clone;
+    }
+    private merge(src: any, update: any) : any {
+        return {...src, ...update};
     }
 }
 
@@ -151,6 +179,9 @@ export class Patch {
             switch (p.op) {
                 case 'replace':
                     this.patches.push(new OpReplace(p));
+                    break;
+                case 'merge':
+                    this.patches.push(new OpMerge(p));
                     break;
                 case 'add':
                     this.patches.push(new OpAdd(p));
