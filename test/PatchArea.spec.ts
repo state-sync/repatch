@@ -13,4 +13,16 @@ describe('Patch', () => {
         expect(res.name).to.equal('test');
     });
 
+    it('Replace test', () => {
+        let src: any = {
+            a : {
+                b: {
+                    c: ''
+                }
+            }
+        };
+        let res: any = new Patch([{op: 'replace', path: '/a//b/c', value: 'test'}]).apply(src);
+        expect(res.a.b.c).to.equal('test');
+    });
+
 });

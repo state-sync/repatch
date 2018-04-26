@@ -9,7 +9,14 @@ export abstract class Op {
     path: string[];
 
     public constructor(src: PatchOperation) {
-        this.path = src.path.split('/').slice(1);
+        this.path = [];
+        const tmp = src.path.split('/');
+        for(let i=0; i< tmp.length; i++) {
+            const item = tmp[i];
+            if(item.length > 0) {
+                this.path.push(item);
+            }
+        }
     }
 
     public abstract apply(json: any): any;
