@@ -116,8 +116,7 @@ class OpAppend extends Op {
     }
 
     public apply(json: any): any {
-        this.value = JSON.parse(JSON.stringify(this.from.apply(json)));
-        return this.root ? [this.value] : this.applySegment(json, 0);
+        return this.root ? [...json, this.value] : this.applySegment(json, 0);
     }
 
     private applySegment(json: any, index: number): any {
