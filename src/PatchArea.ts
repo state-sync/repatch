@@ -46,6 +46,7 @@ export class PatchArea<S> {
             }]
         });
     }
+
     /**
      * Merge value by path, missed elements built by path part. If path part is number, missed array constructed,
      * otherwise object is created.
@@ -90,6 +91,48 @@ export class PatchArea<S> {
     }
 
     /**
+     * Removes element by path
+     * @param {string} path - JSON path
+     */
+    public append(path: string, item: any): void {
+        if (!this.store) throw 'PatchArea is not initialized';
+        try {
+            this.store.dispatch({
+                type: '@STATE_SYNC/PATCH_REDUCE', payload: [{
+                    op: 'append', path: this.path(path), value: item
+                }]
+            });
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    /**
+     * Removes element from array by index
+     * @param {string} path - JSON path
+     */
+    public removeArrayItem(path: string, item: number): void {
+        return this.remove(path + '/' + item);
+    }
+
+    /**
+     * Removes element from array by index
+     * @param {string} path - JSON path
+     */
+    public moveArrayItem(path: string, src: number, dest: number): void {
+        if (!this.store) throw 'PatchArea is not initialized';
+        try {
+            this.store.dispatch({
+                type: '@STATE_SYNC/PATCH_REDUCE', payload: [{
+                    op: 'moveArrayItem', path: this.path(path), value: {src: src, dest: dest}
+                }]
+            });
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    /**
      * Return area for child element
      * @param {string} path - path to child element
      * @returns {PatchArea<S>}
@@ -112,6 +155,6 @@ export class PatchArea<S> {
 
     private path(path: string) {
         if (path.startsWith('/')) path = path.substring(1);
-        return this.rootPath + '/'+ path;
+        return this.rootPath + '/' + path;
     }
 }

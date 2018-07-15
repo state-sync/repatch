@@ -11,9 +11,9 @@ export abstract class Op {
     public constructor(src: PatchOperation) {
         this.path = [];
         const tmp = src.path.split('/');
-        for(let i=0; i< tmp.length; i++) {
+        for (let i = 0; i < tmp.length; i++) {
             const item = tmp[i];
-            if(item.length > 0) {
+            if (item.length > 0) {
                 this.path.push(item);
             }
         }
@@ -70,7 +70,8 @@ class OpMerge extends Op {
         }
         return clone;
     }
-    private merge(src: any, update: any) : any {
+
+    private merge(src: any, update: any): any {
         return {...src, ...update};
     }
 }
@@ -102,6 +103,68 @@ class OpCopy extends Op {
     }
 }
 
+class OpAppend extends Op {
+    private value: any;
+    private root: boolean;
+    private from: OpSelect;
+
+    public constructor(src: PatchOperation) {
+        super(src);
+        this.value = src.value;
+        this.root = src.path === '' || src.path === '/';
+        this.from = new OpSelect({op: 'select', path: src.from || '/'});
+    }
+
+    public apply(json: any): any {
+        this.value = JSON.parse(JSON.stringify(this.from.apply(json)));
+        return this.root ? [this.value] : this.applySegment(json, 0);
+    }
+
+    private applySegment(json: any, index: number): any {
+        let clone = json instanceof Array ? [...json] : {...json};
+        if (index + 1 < this.path.length) {
+            clone[this.path[index]] = this.applySegment(clone[this.path[index]] || {}, index + 1);
+        } else {
+            clone[this.path[index]] = clone[this.path[index]] || [];
+            clone[this.path[index]].push(this.value);
+        }
+        return clone;
+    }
+}
+
+class OpMoveArrayItem extends Op {
+    private value: {src: number; dest: number};
+    private root: boolean;
+    private from: OpSelect;
+
+    public constructor(src: PatchOperation) {
+        super(src);
+        this.value = src.value;
+        this.root = src.path === '' || src.path === '/';
+        this.from = new OpSelect({op: 'select', path: src.from || '/'});
+    }
+
+    public apply(json: any): any {
+        //TODO: fix
+        return this.root ? this.value : this.applySegment(json, 0);
+    }
+
+    private applySegment(json: any, index: number): any {
+        let clone = json instanceof Array ? [...json] : {...json};
+        if (index + 1 < this.path.length) {
+            clone[this.path[index]] = this.applySegment(clone[this.path[index]] || {}, index + 1);
+        } else {
+            let arr = clone[this.path[index]] = clone[this.path[index]] || [];
+            const item = arr[this.value.src];
+            arr.splice(this.value.dest, 0, item);
+            arr.splice(this.value.src, 1);
+            clone[this.path[index]].push(this.value);
+        }
+        return clone;
+    }
+}
+
+
 export class OpSelect extends Op {
     private root: boolean;
 
@@ -112,7 +175,7 @@ export class OpSelect extends Op {
 
     public apply(json: any): any {
         const p = this.path;
-        for(let i=0; i< p.length;i++) {
+        for (let i = 0; i < p.length; i++) {
             json = json ? json[p[i]] : null;
         }
         return json;
@@ -136,8 +199,8 @@ class OpAdd extends Op {
         if (index + 1 < this.path.length) {
             clone[this.path[index]] = this.applySegment(clone[this.path[index]] || {}, index + 1);
         } else {
-            if(clone instanceof Array) {
-                if(this.path[index] === '-') {
+            if (clone instanceof Array) {
+                if (this.path[index] === '-') {
                     clone.push(this.value);
                 } else {
                     clone.splice(parseInt(this.path[index]), 0, this.value);
@@ -166,7 +229,7 @@ class OpRemove extends Op {
         if (index + 1 < this.path.length) {
             clone[this.path[index]] = this.applySegment(clone[this.path[index]] || {}, index + 1);
         } else {
-            if(clone instanceof Array) {
+            if (clone instanceof Array) {
                 clone.splice(parseInt(this.path[index]), 1);
             } else {
                 delete clone[this.path[index]];
@@ -198,6 +261,12 @@ export class Patch {
                     break;
                 case 'copy':
                     this.patches.push(new OpCopy(p));
+                    break;
+                case 'append':
+                    this.patches.push(new OpAppend(p));
+                    break;
+                case 'moveArrayItem':
+                    this.patches.push(new OpMoveArrayItem(p));
                     break;
                 default:
                     debugger;
