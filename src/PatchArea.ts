@@ -96,6 +96,25 @@ export class PatchArea<S> {
             console.error(e);
         }
     }
+    /**
+     * Insert element into array
+     * @param {string} path - JSON path
+     * @param {number} index - insert index
+     * @param {any} value - value to insert
+     */
+    public insert(path: string, index: number, value: any): void {
+        if (!this.store) throw 'PatchArea is not initialized';
+        if (index < 0) throw 'index < 0';
+        try {
+            this.store.dispatch({
+                type: '@STATE_SYNC/PATCH_REDUCE', payload: [{
+                    op: 'insert', path: this.path(path), index: index, value: value
+                }]
+            });
+        } catch (e) {
+            console.error(e);
+        }
+    }
 
     /**
      * Append element by path

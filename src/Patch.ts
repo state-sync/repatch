@@ -3,6 +3,7 @@ export interface PatchOperation {
     path: string;
     value?: any;
     from?: string;
+    index?: number;
 }
 
 export abstract class Op {
@@ -126,6 +127,36 @@ class OpAppend extends Op {
         } else {
             clone[this.path[index]] = clone[this.path[index]] || [];
             clone[this.path[index]].push(this.value);
+        }
+        return clone;
+    }
+}
+
+class OpInsert extends Op {
+    private index: number;
+    private value: any;
+    private root: boolean;
+    private from: OpSelect;
+
+    public constructor(src: PatchOperation) {
+        super(src);
+        this.value = src.value;
+        this.index = src.index || 0;
+        this.root = src.path === '' || src.path === '/';
+        this.from = new OpSelect({op: 'select', path: src.from || '/'});
+    }
+
+    public apply(json: any): any {
+        return this.root ? [...json, this.value] : this.applySegment(json, 0);
+    }
+
+    private applySegment(json: any, index: number): any {
+        let clone = json instanceof Array ? [...json] : {...json};
+        if (index + 1 < this.path.length) {
+            clone[this.path[index]] = this.applySegment(clone[this.path[index]] || {}, index + 1);
+        } else {
+            clone[this.path[index]] = clone[this.path[index]] || [];
+            clone[this.path[index]].splice(this.index, 0, this.value);
         }
         return clone;
     }
@@ -263,6 +294,9 @@ export class Patch {
                     break;
                 case 'append':
                     this.patches.push(new OpAppend(p));
+                    break;
+                case 'insert':
+                    this.patches.push(new OpInsert(p));
                     break;
                 case 'moveArrayItem':
                     this.patches.push(new OpMoveArrayItem(p));
