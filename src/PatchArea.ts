@@ -12,6 +12,13 @@ export class PatchArea<S> {
     }
 
     /**
+     * Returns path to this area from root of redux state
+     * @returns {string}
+     */
+    public areaPath(): string {
+        return this.rootPath;
+    }
+    /**
      * Selects and return value by path
      * @param {string} path - JSON path
      * @returns {any} value
@@ -91,7 +98,7 @@ export class PatchArea<S> {
     }
 
     /**
-     * Removes element by path
+     * Append element by path
      * @param {string} path - JSON path
      */
     public append(path: string, item: any): void {

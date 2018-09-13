@@ -1,6 +1,6 @@
 {
   "name": "@state-sync/repatch",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "state-sync client only json path reducer",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
