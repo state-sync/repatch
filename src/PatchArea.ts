@@ -167,16 +167,42 @@ export class PatchArea<S> {
         return new PatchArea<S>(this.path(path), this.store);
     }
 
+    /**
+     * Return function which accept Event and set value to e.target.value.
+     * Used by forms <code>onChange={area.accept('/path')}</code>
+     * @param path - path to set
+     * @return
+     */
     public accept(path: string): (a: any) => void {
         return (e: any) => this.replace(path, e.target.value);
     }
 
+    /**
+     * Return function which accept Event and set value to Number.parseFloat(e.target.value).
+     * Used by forms <code>onChange={area.accept('/path')}</code>
+     * @param path - path to set
+     * @return
+     */
     public acceptFloat(path: string): (a: any) => void {
         return (e: any) => this.replace(path, e.target.value ? Number.parseFloat(e.target.value) : null);
     }
 
+    /**
+     * Return function which accept Event and set value to Number.parseInt(e.target.value).
+     * Used by forms <code>onChange={area.accept('/path')}</code>
+     * @param path - path to set
+     * @return
+     */
     public acceptInt(path: string): (a: any) => void {
         return (e: any) => this.replace(path, e.target.value ? Number.parseInt(e.target.value) : null);
+    }
+
+    /**
+     * Toggle boolean value
+     * @param path
+     */
+    public toggle(path: string) {
+        this.replace(path, !this.select(path));
     }
 
     private path(path: string) {

@@ -1,6 +1,6 @@
 {
   "name": "@state-sync/repatch",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "state-sync path based reducer",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
