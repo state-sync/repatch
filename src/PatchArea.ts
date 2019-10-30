@@ -3,8 +3,8 @@ import { Store } from "redux";
 import { OpSelect } from './Patch';
 
 export class PatchArea<S> {
-    private store: Store<S>;
-    private rootPath: string;
+    readonly store: Store<S>;
+    readonly rootPath: string;
 
     constructor(rootPath: string, store: Store<S>) {
         this.rootPath = rootPath;
@@ -33,9 +33,9 @@ export class PatchArea<S> {
      * Example 1
      * <pre>
      *     source: {}
-     *     replace('/todo/1/label', 'test')
+     *     replace('/items/1/label', 'test')
      *     result: {
-     *      todo: [
+     *      items: [
      *          {
      *              label: 'test'
      *          }
@@ -117,8 +117,9 @@ export class PatchArea<S> {
     }
 
     /**
-     * Append element by path
+     * Append element to array by path
      * @param {string} path - JSON path
+     * @param {any} item - Item to add
      */
     public append(path: string, item: any): void {
         if (!this.store) throw 'PatchArea is not initialized';
@@ -136,14 +137,17 @@ export class PatchArea<S> {
     /**
      * Removes element from array by index
      * @param {string} path - JSON path
+     * @param {number} index - Item index
      */
-    public removeArrayItem(path: string, item: number): void {
-        return this.remove(path + '/' + item);
+    public removeArrayItem(path: string, index: number): void {
+        return this.remove(path + '/' + index);
     }
 
     /**
-     * Removes element from array by index
+     * Move element in array by index
      * @param {string} path - JSON path
+     * @param {number} src - source index
+     * @param {number} dest - destination index
      */
     public moveArrayItem(path: string, src: number, dest: number): void {
         if (!this.store) throw 'PatchArea is not initialized';
@@ -161,7 +165,7 @@ export class PatchArea<S> {
     /**
      * Return area for child element
      * @param {string} path - path to child element
-     * @returns {PatchArea<S>}
+     * @returns {PatchArea}
      */
     public child(path: string): PatchArea<S> {
         return new PatchArea<S>(this.path(path), this.store);
