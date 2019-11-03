@@ -4,7 +4,7 @@ import { Patch } from './Patch';
 export function PatchReducer<S>(initialState: any, reducers: Reducer<S>): Reducer<S> {
     return (state: any, action: any): any => {
         // initialization
-        if (state === undefined) return reducers.call(undefined, undefined, initialState);
+        if (state === undefined) return initialState;
 
         // sync
         try {
@@ -24,7 +24,7 @@ export function PatchReducer<S>(initialState: any, reducers: Reducer<S>): Reduce
             console.error('action failed:', action, e);
         }
 
-        return reducers.call(undefined, undefined, state);
+        return reducers.call(undefined, state, action);
     }
 
 }
