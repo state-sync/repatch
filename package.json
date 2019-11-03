@@ -1,11 +1,11 @@
 {
   "name": "@state-sync/repatch",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "description": "state-sync path based reducer",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "types": "dist/index.d.ts",
-  "repository": "https://github.com/state-sync/redux-path-reducer.git",
+  "repository": "git@github.com:state-sync/repatch.git",
   "author": "Fedor Ilinykh <ify@kibibox.com>",
   "keywords": [
     "statesync",
