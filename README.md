@@ -2,17 +2,17 @@
 
 WARNING: It is in development and I would not suggest to use it until version 1.0.
 
-#Installation
+# Installation
 
 Library is available as and NPM package. You can install it as usual.
 ```shell script
 npm install @state-sync/repatch --save
 ```
 
-#Documentation
+# Documentation
 TSDocs: [documentation](./tsdoc/index.html)
 
-#Sample
+# Sample
 
 ```typescript
 // define state interface
