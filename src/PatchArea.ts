@@ -2,7 +2,7 @@ import { Store } from "redux";
 
 import { OpSelect } from './Patch';
 
-export class PatchArea<S> {
+export class PatchArea<S, Root> {
     readonly store: Store<S>;
     readonly rootPath: string;
 
@@ -17,6 +17,13 @@ export class PatchArea<S> {
      */
     public areaPath(): string {
         return this.rootPath;
+    }
+
+    /**
+     * Returns root model of area
+     */
+    public model(): Root {
+        return this.select('') as Root;
     }
     /**
      * Selects and return value by path
@@ -167,8 +174,8 @@ export class PatchArea<S> {
      * @param {string} path - path to child element
      * @returns {PatchArea}
      */
-    public child(path: string): PatchArea<S> {
-        return new PatchArea<S>(this.path(path), this.store);
+    public child<ChildRoot>(path: string): PatchArea<S, ChildRoot> {
+        return new PatchArea<S, ChildRoot>(this.path(path), this.store);
     }
 
     /**
