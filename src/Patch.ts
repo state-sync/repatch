@@ -251,13 +251,19 @@ class OpRemove extends Op {
     }
 
     public apply(json: any): any {
-        return this.applySegment(json, 0);
+        const res = this.applySegment(json, 0);
+        return res === undefined ? json : res;
     }
 
     private applySegment(json: any, index: number): any {
+        const child1 = json[this.path[index]];
+        if (child1 === undefined) {
+            return undefined;
+        }
         let clone = json instanceof Array ? [...json] : {...json};
         if (index + 1 < this.path.length) {
-            clone[this.path[index]] = this.applySegment(clone[this.path[index]] || {}, index + 1);
+            const child = clone[this.path[index]];
+            clone[this.path[index]] = this.applySegment( child, index + 1);
         } else {
             if (clone instanceof Array) {
                 clone.splice(parseInt(this.path[index]), 1);
